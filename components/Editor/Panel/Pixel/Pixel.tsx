@@ -39,54 +39,48 @@ const Pixel: React.FC<Props> = ({
     // useCallback(
     () => {
       const name = groupName || brushColor;
-      const { previousColor, previousName } = modifyPixelById({
-        rowIndex: rowIndex,
-        columnIndex: columnIndex,
-        color: brushColor,
-        name: name,
-      });
-      if (groupName) {
-        dispatch(
-          appendToSelectedGroup({
-            data: {
-              name: name,
-              color: brushColor,
-              rowIndex: rowIndex,
-              columnIndex: columnIndex,
-            },
-          })
-        );
-      }
-      dispatch(
-        pixelDataRedux.update({
-          action: {
-            type: pixelDataRedux.pixelChangeActionType.PIXEL_CHANGE,
-            before: [
-              {
-                rowIndex: rowIndex,
-                columnIndex: columnIndex,
-                color: previousColor,
-                name: previousName,
-              },
-            ],
-            after: [
-              {
-                rowIndex: rowIndex,
-                columnIndex: columnIndex,
-                color: brushColor,
-                name: brushColor,
-              },
-            ],
-          },
 
-          // element: {
-          //   rowIndex: rowIndex,
-          //   columnIndex: columnIndex,
-          //   color: brushColor,
-          //   name: brushColor,
-          // },
-        })
-      );
+      // const { previousColor, previousName } = modifyPixelById({
+      //   rowIndex: rowIndex,
+      //   columnIndex: columnIndex,
+      //   color: brushColor,
+      //   name: name,
+      // });
+      // if (groupName) {
+      //   dispatch(
+      //     appendToSelectedGroup({
+      //       data: {
+      //         name: name,
+      //         color: brushColor,
+      //         rowIndex: rowIndex,
+      //         columnIndex: columnIndex,
+      //       },
+      //     })
+      //   );
+      // }
+      // dispatch(
+      //   pixelDataRedux.update({
+      //     action: {
+      //       type: pixelDataRedux.pixelChangeActionType.PIXEL_CHANGE,
+      //       before: [
+      //         {
+      //           rowIndex: rowIndex,
+      //           columnIndex: columnIndex,
+      //           color: previousColor,
+      //           name: previousName,
+      //         },
+      //       ],
+      //       after: [
+      //         {
+      //           rowIndex: rowIndex,
+      //           columnIndex: columnIndex,
+      //           color: brushColor,
+      //           name: brushColor,
+      //         },
+      //       ],
+      //     },
+      //   })
+      // );
     };
   const onMouseDownHandler: React.MouseEventHandler<HTMLDivElement> = (
     event: MouseEvent

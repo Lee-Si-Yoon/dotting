@@ -16,12 +16,20 @@ import ReactDOM, { render } from "react-dom";
 import { Pixel2dRow, Position } from "../Panel";
 import { SizeControlProps } from "../SizeControl/SizeControlProps";
 import { modifyPixelById } from "../../../../const/PixelFunctions";
-import yorkie from "yorkie-js-sdk";
+import dynamic from "next/dynamic";
+import {
+  DottingDoc,
+  setClient,
+  setDocument,
+} from "../../../../store/modules/docSlice";
 
 interface Props extends SizeControlProps {
   panelRef: React.RefObject<HTMLDivElement>;
   pixel2dArray: Pixel2dRow[];
 }
+
+const INITIAL_ROW_COUNT = 32;
+const INITIAL_COLUMN_COUNT = 32;
 
 const PixelsContainer: React.FC<Props> = ({
   panelRef,
@@ -38,6 +46,64 @@ const PixelsContainer: React.FC<Props> = ({
   const actionRecord = useSelector(
     (state: RootState) => state.pixelData.actionRecord
   );
+
+  const document = useSelector((state: RootState) => state.docSlice.doc);
+  const client = useSelector((state: RootState) => state.docSlice.client);
+  useEffect(() => {
+    const activateClient = async () => {
+      const yorkie = await import("yorkie-js-sdk");
+      const client = new yorkie.Client("http://localhost:8080");
+      await client.activate();
+      dispatch(setClient(client));
+      const doc = new yorkie.Document<DottingDoc>("dotting-1");
+      await client.attach(doc);
+      dispatch(setDocument(doc));
+
+      doc.update((root: DottingDoc) => {
+        if (!root.content) {
+          //initialize
+          const tempArray = [];
+          const rowStartIndex = 0;
+          const columnStartIndex = 0;
+          for (let i = 0; i < INITIAL_ROW_COUNT; i++) {
+            const tempRow = [];
+            for (let j = 0; j < INITIAL_COLUMN_COUNT; j++) {
+              const pixelElement: pixelDataElement = {
+                name: undefined,
+                color: undefined,
+                rowIndex: i,
+                columnIndex: j,
+              };
+              tempRow.push(pixelElement);
+            }
+            tempArray.push(tempRow);
+          }
+          root.content = tempArray;
+          root.rowStartIndex = rowStartIndex;
+          root.columnStartIndex = columnStartIndex;
+          root.columnCount = INITIAL_ROW_COUNT;
+          root.rowCount = INITIAL_ROW_COUNT;
+        }
+      });
+
+      doc.subscribe((event) => {
+        if (event.type === "local-change") {
+          console.log(event);
+        } else if (event.type === "remote-change") {
+          for (const changeInfo of event.value) {
+            // console.log(changeInfo.change.getMessage());
+            for (const path of changeInfo.paths) {
+              console.log("change path", path);
+              if (path.startsWith("$.content")) {
+                // const x = changeInfo.
+              }
+            }
+          }
+        }
+      });
+    };
+    activateClient();
+  }, []);
 
   useEffect(() => {
     console.log("record changed");
@@ -92,8 +158,39 @@ const PixelsContainer: React.FC<Props> = ({
     // if(typeof actionRecord === pixelDataRedux.laneChangeActionType)
   }, [actionRecord]);
 
+  if (!document || !client) {
+    return null;
+  }
+
   return (
     <div id="pixelsContainer" ref={panelRef}>
+      <button
+        onClick={() => {
+          document.update((root) => {
+            root.content[0][0] = {
+              name: "hi",
+              color: "#000000",
+              rowIndex: 0,
+              columnIndex: 0,
+            };
+          });
+        }}
+      >
+        update yorkie
+      </button>
+      {document.getRoot().content.map((row) => {
+        return (
+          <div
+            // key={`row${row.rowIndex}`}
+            // id={`row${row.rowIndex}`}
+            className="row"
+          >
+            {row.map((element) => {
+              return;
+            })}
+          </div>
+        );
+      })}
       {pixel2dArray.map((row) => {
         return (
           <div

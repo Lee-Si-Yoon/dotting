@@ -8,11 +8,18 @@ import {
 
 import { PixelsContainer } from "./PixelsContainer";
 import * as S from "./styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as pixelData from "../../../store/modules/pixelData";
 import { Pixel } from "./Pixel";
 import { PixelBorder } from "./PixelBorder";
 import { SizeControl } from "./SizeControl";
+import yorkie, { DocEvent } from "yorkie-js-sdk";
+import {
+  DottingDoc,
+  setClient,
+  setDocument,
+} from "../../../store/modules/docSlice";
+import { RootState } from "../../../store/modules";
 
 interface Props {
   initialData: pixelData.pixelDataElement[][];
@@ -46,6 +53,7 @@ const Panel: React.FC<Props> = ({
 }) => {
   console.log("panel rendered");
   const dispatch = useDispatch();
+
   const [pixel2dArray, setPixel2dArray] = useState<Pixel2dRow[]>([]);
 
   function appendBehind<Type>(element: Type, array: Type[]): Type[] {
@@ -224,7 +232,7 @@ const Panel: React.FC<Props> = ({
             deleteColumn={deleteColumn}
             deleteRow={deleteRow}
           />
-          <div style={{ position: "absolute", pointerEvents: "none" }}>
+          {/* <div style={{ position: "absolute", pointerEvents: "none" }}>
             {pixel2dArray.map((row) => {
               return (
                 <div style={{ display: "flex" }} key={`row${row.rowIndex}`}>
@@ -238,7 +246,7 @@ const Panel: React.FC<Props> = ({
                 </div>
               );
             })}
-          </div>
+          </div> */}
         </SizeControl>
       </S.PixelsCanvasContainer>
     </S.Container>
